@@ -49,7 +49,7 @@ BEGIN
     WHERE d.d_id = driverID;
 END //
 
--
+
 CREATE PROCEDURE GetAvailableCars()
 BEGIN
     SELECT registration, car_make, car_model, status
