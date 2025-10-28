@@ -1,20 +1,98 @@
-CREATE TABLE DRIVERS(d_id INT PRIMARY KEY,first_name VARCHAR(30) NOT NULL,last_name VARCHAR(30) NOT NULL,address VARCHAR(60) NOT NULL,gender CHAR(1),phone_number VARCHAR(15) UNIQUE,date_of_birth DATE,date_employed DATE,aadhaar_number VARCHAR(12) UNIQUE);
+CREATE TABLE DRIVERS(
+    d_id INT PRIMARY KEY,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    address VARCHAR(60) NOT NULL,
+    gender CHAR(1),
+    phone_number VARCHAR(15) UNIQUE,
+    date_of_birth DATE,
+    date_employed DATE,
+    aadhaar_number VARCHAR(12) UNIQUE);
 
-CREATE TABLE CARS(registration VARCHAR(12) PRIMARY KEY,car_make VARCHAR(20),car_model VARCHAR(20),last_MOT DATE,status VARCHAR(20),d_id INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
 
-CREATE TABLE OPERATORS(op_id INT PRIMARY KEY,first_name VARCHAR(30) NOT NULL,last_name VARCHAR(30) NOT NULL,address VARCHAR(60) NOT NULL,gender CHAR(1),phone_number VARCHAR(15) UNIQUE,date_of_birth DATE,date_employed DATE);
+CREATE TABLE CARS(
+    registration VARCHAR(12) PRIMARY KEY,
+    car_make VARCHAR(20),
+    car_model VARCHAR(20),
+    last_MOT DATE,
+    status VARCHAR(20),
+    d_id INT,
+    FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
 
-CREATE TABLE CLIENTS(client_id INT PRIMARY KEY,client_type VARCHAR(10) NOT NULL,first_name VARCHAR(30),last_name VARCHAR(30),address VARCHAR(60),card_number VARCHAR(16),CVV VARCHAR(3),expiry VARCHAR(5),phone_number VARCHAR(15) UNIQUE);
 
-CREATE TABLE BOOKINGS(booking_id INT PRIMARY KEY,op_id INT,d_id INT,client_id INT,type_booking VARCHAR(10),time_of_booking DATETIME,time_of_pickup DATETIME,pickup_location VARCHAR(30),destination VARCHAR(30),payment_type VARCHAR(5),price INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL,FOREIGN KEY(op_id) REFERENCES OPERATORS(op_id) ON DELETE SET NULL,FOREIGN KEY(client_id) REFERENCES CLIENTS(client_id) ON DELETE SET NULL);
+CREATE TABLE OPERATORS(
+    op_id INT PRIMARY KEY,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    address VARCHAR(60) NOT NULL,
+    gender CHAR(1),
+    phone_number VARCHAR(15) UNIQUE,
+    date_of_birth DATE,
+    date_employed DATE);
 
-CREATE TABLE PAYMENTS(payment_id INT PRIMARY KEY,booking_id INT,card_number VARCHAR(16),CVV VARCHAR(3),expiry VARCHAR(5),price INT,FOREIGN KEY(booking_id) REFERENCES BOOKINGS(booking_id) ON DELETE SET NULL);
 
-CREATE TABLE REVENUE(rev_id INT PRIMARY KEY,booking_id INT,d_id INT,revenue INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL,FOREIGN KEY(booking_id) REFERENCES BOOKINGS(booking_id) ON DELETE SET NULL);
+CREATE TABLE CLIENTS(
+    client_id INT PRIMARY KEY,
+    client_type VARCHAR(10) NOT NULL,
+    first_name VARCHAR(30),
+    last_name VARCHAR(30),
+    address VARCHAR(60),
+    card_number VARCHAR(16),
+    CVV VARCHAR(3),
+    expiry VARCHAR(5),
+    phone_number VARCHAR(15) UNIQUE);
 
-CREATE TABLE O_SHIFTS(shift_id INT PRIMARY KEY,op_id INT,shift_start_time DATETIME,shift_hours INT,FOREIGN KEY(op_id) REFERENCES OPERATORS(op_id) ON DELETE SET NULL);
 
-CREATE TABLE D_SHIFTS(shift_id INT PRIMARY KEY,d_id INT,shift_start_time DATETIME,shift_hours INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
+CREATE TABLE BOOKINGS(
+    booking_id INT PRIMARY KEY,
+    op_id INT,
+    d_id INT,
+    client_id INT,
+    type_booking VARCHAR(10),
+    time_of_booking DATETIME,
+    time_of_pickup DATETIME,
+    pickup_location VARCHAR(30),
+    destination VARCHAR(30),
+    payment_type VARCHAR(5),
+    price INT,
+    FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL,
+    FOREIGN KEY(op_id) REFERENCES OPERATORS(op_id) ON DELETE SET NULL,
+    FOREIGN KEY(client_id) REFERENCES CLIENTS(client_id) ON DELETE SET NULL);
+
+
+CREATE TABLE PAYMENTS(
+    payment_id INT PRIMARY KEY,
+    booking_id INT,
+    card_number VARCHAR(16),
+    CVV VARCHAR(3),
+    expiry VARCHAR(5),
+    price INT,
+    FOREIGN KEY(booking_id) REFERENCES BOOKINGS(booking_id) ON DELETE SET NULL);
+
+
+CREATE TABLE REVENUE(
+    rev_id INT PRIMARY KEY,
+    booking_id INT,
+    d_id INT,
+    revenue INT,
+    FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL,
+    FOREIGN KEY(booking_id) REFERENCES BOOKINGS(booking_id) ON DELETE SET NULL);
+
+
+CREATE TABLE O_SHIFTS(
+    shift_id INT PRIMARY KEY,
+    op_id INT,
+    shift_start_time DATETIME,
+    shift_hours INT,
+    FOREIGN KEY(op_id) REFERENCES OPERATORS(op_id) ON DELETE SET NULL);
+
+
+CREATE TABLE D_SHIFTS(
+    shift_id INT PRIMARY KEY,
+    d_id INT,
+    shift_start_time DATETIME,
+    shift_hours INT,
+    FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
 
 
 INSERT INTO DRIVERS VALUES
