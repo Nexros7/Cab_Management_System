@@ -1,0 +1,81 @@
+CREATE TABLE DRIVERS(d_id INT PRIMARY KEY,first_name VARCHAR(30) NOT NULL,last_name VARCHAR(30) NOT NULL,address VARCHAR(60) NOT NULL,gender CHAR(1),phone_number VARCHAR(15) UNIQUE,date_of_birth DATE,date_employed DATE,aadhaar_number VARCHAR(12) UNIQUE);
+
+CREATE TABLE CARS(registration VARCHAR(12) PRIMARY KEY,car_make VARCHAR(20),car_model VARCHAR(20),last_MOT DATE,status VARCHAR(20),d_id INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
+
+CREATE TABLE OPERATORS(op_id INT PRIMARY KEY,first_name VARCHAR(30) NOT NULL,last_name VARCHAR(30) NOT NULL,address VARCHAR(60) NOT NULL,gender CHAR(1),phone_number VARCHAR(15) UNIQUE,date_of_birth DATE,date_employed DATE);
+
+CREATE TABLE CLIENTS(client_id INT PRIMARY KEY,client_type VARCHAR(10) NOT NULL,first_name VARCHAR(30),last_name VARCHAR(30),address VARCHAR(60),card_number VARCHAR(16),CVV VARCHAR(3),expiry VARCHAR(5),phone_number VARCHAR(15) UNIQUE);
+
+CREATE TABLE BOOKINGS(booking_id INT PRIMARY KEY,op_id INT,d_id INT,client_id INT,type_booking VARCHAR(10),time_of_booking DATETIME,time_of_pickup DATETIME,pickup_location VARCHAR(30),destination VARCHAR(30),payment_type VARCHAR(5),price INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL,FOREIGN KEY(op_id) REFERENCES OPERATORS(op_id) ON DELETE SET NULL,FOREIGN KEY(client_id) REFERENCES CLIENTS(client_id) ON DELETE SET NULL);
+
+CREATE TABLE PAYMENTS(payment_id INT PRIMARY KEY,booking_id INT,card_number VARCHAR(16),CVV VARCHAR(3),expiry VARCHAR(5),price INT,FOREIGN KEY(booking_id) REFERENCES BOOKINGS(booking_id) ON DELETE SET NULL);
+
+CREATE TABLE REVENUE(rev_id INT PRIMARY KEY,booking_id INT,d_id INT,revenue INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL,FOREIGN KEY(booking_id) REFERENCES BOOKINGS(booking_id) ON DELETE SET NULL);
+
+CREATE TABLE O_SHIFTS(shift_id INT PRIMARY KEY,op_id INT,shift_start_time DATETIME,shift_hours INT,FOREIGN KEY(op_id) REFERENCES OPERATORS(op_id) ON DELETE SET NULL);
+
+CREATE TABLE D_SHIFTS(shift_id INT PRIMARY KEY,d_id INT,shift_start_time DATETIME,shift_hours INT,FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
+
+
+INSERT INTO DRIVERS VALUES
+(101,'Raj','Sharma','12 MG Road, Mumbai','M','9412039482','1985-05-10','2015-06-01','661234560123'),
+(102,'Anita','Verma','34 Park Street, Delhi','F','9558321049','1990-03-15','2017-07-10','662345671234'),
+(103,'Vikram','Singh','56 Ring Road, Jaipur','M','9736529841','1988-08-20','2016-05-20','663456782345'),
+(104,'Priya','Kumar','78 MG Marg, Bangalore','F','9894305730','1992-01-30','2018-11-12','664567893456'),
+(105,'Suresh','Patel','90 Ashok Nagar, Ahmedabad','M','9628741205','1987-12-05','2014-03-22','665678904567');
+
+INSERT INTO CARS VALUES
+('MH12AB1234','Toyota','Corolla','2024-03-15','Available',101),
+('DL05CD5678','Honda','City','2024-04-10','In service',102),
+('RJ14EF9012','Hyundai','Verna','2024-02-20','Available',103),
+('KA01GH3456','Maruti','Suzuki Dzire','2024-01-30','Available',104),
+('GJ05IJ7890','Tata','Tiago','2024-03-25','In service',105);
+
+INSERT INTO OPERATORS VALUES
+(201,'Amit','Reddy','45 Park Lane, Delhi','M','9726841309','1988-06-15','2016-08-01'),
+(202,'Neha','Shah','22 MG Road, Mumbai','F','9842375618','1991-02-25','2017-09-10'),
+(203,'Rohit','Gupta','34 Ring Road, Jaipur','M','9564209873','1985-11-05','2015-06-22'),
+(204,'Sonal','Mehta','56 Ashok Nagar, Ahmedabad','F','9871356420','1990-08-18','2018-03-15'),
+(205,'Vikas','Malhotra','78 Park Street, Kolkata','M','9698742051','1987-12-30','2014-10-12');
+
+INSERT INTO CLIENTS VALUES
+(301,'Regular','Arjun','Singh','12 MG Road, Mumbai','204897351465','123','12/25','9988776655'),
+(302,'Corporate','Priya','Patel','34 Park Street, Delhi','659273841290','234','11/24','9988776656'),
+(303,'Regular','Rakesh','Kumar','56 Ring Road, Jaipur','917364502837','345','10/26','9988776657'),
+(304,'Corporate','Neha','Verma','78 Ashok Nagar, Bangalore','126593748210','456','09/25','9988776658'),
+(305,'Regular','Suresh','Sharma','90 Park Street, Ahmedabad','483720916052','567','08/24','9988776659');
+
+INSERT INTO BOOKINGS VALUES
+(401,201,101,301,'Cab','2025-10-24 10:00:00','2025-10-24 10:30:00','MG Road, Mumbai','Airport','CARD',500),
+(402,202,102,302,'Cab','2025-10-24 11:00:00','2025-10-24 11:30:00','Park Street, Delhi','Railway Station','CASH',450),
+(403,203,103,303,'Cab','2025-10-24 12:00:00','2025-10-24 12:30:00','Ring Road, Jaipur','Hotel','CARD',600),
+(404,204,104,304,'Cab','2025-10-24 13:00:00','2025-10-24 13:30:00','Ashok Nagar, Bangalore','Airport','CARD',700),
+(405,205,105,305,'Cab','2025-10-24 14:00:00','2025-10-24 14:30:00','Park Street, Ahmedabad','Bus Stand','CASH',550);
+
+INSERT INTO PAYMENTS VALUES
+(501,401,'204897351465','123','12/25',500),
+(502,402,'659273841290','234','11/24',450),
+(503,403,'917364502837','345','10/26',600),
+(504,404,'126593748210','456','09/25',700),
+(505,405,'483720916052','567','08/24',550);
+
+INSERT INTO REVENUE VALUES
+(601,401,101,500),
+(602,402,102,450),
+(603,403,103,600),
+(604,404,104,700),
+(605,405,105,550);
+
+INSERT INTO O_SHIFTS VALUES
+(701,201,'2025-10-24 09:00:00',8),
+(702,202,'2025-10-24 10:00:00',8),
+(703,203,'2025-10-24 11:00:00',9),
+(704,204,'2025-10-24 12:00:00',7),
+(705,205,'2025-10-24 13:00:00',10);
+
+INSERT INTO D_SHIFTS VALUES
+(801,101,'2025-10-24 08:00:00',9),
+(802,102,'2025-10-24 09:00:00',10),
+(803,103,'2025-10-24 10:00:00',11),
+(804,104,'2025-10-24 11:00:00',12),
+(805,105,'2025-10-24 12:00:00',8);
