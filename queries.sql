@@ -124,10 +124,10 @@ INSERT INTO CLIENTS VALUES
 (305,'Regular','Suresh','Sharma','90 Park Street, Ahmedabad','483720916052','567','08/24','9988776659');
 
 INSERT INTO BOOKINGS VALUES
-(401,201,101,301,'Cab','2025-10-24 10:00:00','2025-10-24 10:30:00','MG Road, Mumbai','Airport','CARD',500),
+(401,201,101,301,'Cab','2025-10-24 10:00:00','2025-10-24 10:30:00','MG Road, Mumbai','Airport','UPI',500),
 (402,202,102,302,'Cab','2025-10-24 11:00:00','2025-10-24 11:30:00','Park Street, Delhi','Railway Station','CASH',450),
-(403,203,103,303,'Cab','2025-10-24 12:00:00','2025-10-24 12:30:00','Ring Road, Jaipur','Hotel','CARD',600),
-(404,204,104,304,'Cab','2025-10-24 13:00:00','2025-10-24 13:30:00','Ashok Nagar, Bangalore','Airport','CARD',700),
+(403,203,103,303,'Cab','2025-10-24 12:00:00','2025-10-24 12:30:00','Ring Road, Jaipur','Hotel','UPI',600),
+(404,204,104,304,'Cab','2025-10-24 13:00:00','2025-10-24 13:30:00','Ashok Nagar, Bangalore','Airport','UPI',700),
 (405,205,105,305,'Cab','2025-10-24 14:00:00','2025-10-24 14:30:00','Park Street, Ahmedabad','Bus Stand','CASH',550);
 
 INSERT INTO PAYMENTS VALUES
