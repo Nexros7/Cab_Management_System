@@ -4,7 +4,7 @@ CREATE TABLE DRIVERS(
     last_name VARCHAR(30) NOT NULL,
     address VARCHAR(60) NOT NULL,
     gender CHAR(1),
-    phone_number VARCHAR(15) UNIQUE,
+    phone_number VARCHAR(15),
     date_of_birth DATE,
     date_employed DATE,
     aadhaar_number VARCHAR(12) UNIQUE);
