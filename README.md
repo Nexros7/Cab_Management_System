@@ -8,10 +8,13 @@ Stack: MySQL, python
 ### *This project is implemented in 3 phases:*  
 
 **Phase 1:**  
-Drafting of Entity-Relationship (ER) diagram, Relational Schema and implementing the corresponding Data Definition Language (DDL) commands  
+Drafting of Entity-Relationship (ER) diagram, Relational Schema  
 
 **Phase 2:**  
-Implementing stored procedures, triggers to handle complex relationships within the database
+Implementing the corresponding Data Definition Language (DDL) and Data Manipulation Language (DML)
 
 **Phase 3:**  
+Implementing stored procedures, triggers to handle complex relationships within the database
+
+**Phase 4:**  
 Implementing a frontend
