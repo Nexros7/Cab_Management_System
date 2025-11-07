@@ -2,19 +2,10 @@ DELIMITER //
 
 CREATE PROCEDURE GetDriverBookings(IN driverID INT)
 BEGIN
-    SELECT 
-        b.booking_id,
-        c.first_name AS client_first_name,
-        c.last_name AS client_last_name,
-        b.pickup_location,
-        b.destination,
-        b.price,
-        b.payment_type,
-        b.time_of_pickup
+    SELECT b.booking_id, c.first_name AS client_name, b.pickup_location, b.destination, b.price, b.payment_type
     FROM BOOKINGS b
     JOIN CLIENTS c ON b.client_id = c.client_id
-    WHERE b.d_id = driverID
-    ORDER BY b.time_of_pickup DESC;
+    WHERE b.d_id = driverID;
 END //
 
 CREATE PROCEDURE AddDriver(
@@ -54,6 +45,7 @@ BEGIN
     WHERE status = 'Available';
 END //
 
+    
 CREATE FUNCTION GetDriverTotalRevenue(driverID INT)
 RETURNS INT
 DETERMINISTIC
