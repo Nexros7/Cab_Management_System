@@ -49,7 +49,7 @@ CREATE TABLE CLIENTS(
 
 
 CREATE TABLE BOOKINGS(
-    booking_id INT PRIMARY KEY,
+    booking_id INT PRIMARY KEY AUTO_INCREMENT,
     op_id INT,
     d_id INT,
     client_id INT,
@@ -66,7 +66,7 @@ CREATE TABLE BOOKINGS(
 
 
 CREATE TABLE PAYMENTS(
-    payment_id INT PRIMARY KEY,
+    payment_id INT PRIMARY KEY AUTO_INCREMENT,
     booking_id INT,
     card_number VARCHAR(16),
     CVV VARCHAR(3),
@@ -76,7 +76,7 @@ CREATE TABLE PAYMENTS(
 
 
 CREATE TABLE REVENUE(
-    rev_id INT PRIMARY KEY,
+    rev_id INT PRIMARY KEY AUTO_INCREMENT,
     booking_id INT,
     d_id INT,
     revenue INT,
@@ -170,3 +170,10 @@ INSERT INTO D_SHIFTS VALUES
 (803,103,'2025-10-24 10:00:00',11),
 (804,104,'2025-10-24 11:00:00',12),
 (805,105,'2025-10-24 12:00:00',8);
+
+SELECT d_id, revenue
+FROM REVENUE
+WHERE revenue > (
+    SELECT AVG(revenue)
+    FROM REVENUE
+);
