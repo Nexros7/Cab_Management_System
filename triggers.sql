@@ -23,32 +23,13 @@ BEGIN
     END IF;
 END //
 
-
-CREATE TRIGGER update_car_status
-AFTER UPDATE ON CARS
-FOR EACH ROW
-BEGIN
-    IF NEW.d_id IS NOT NULL THEN
-        UPDATE CARS SET status = 'In service' WHERE registration = NEW.registration;
-    END IF;
-END //
-
-
-CREATE TABLE IF NOT EXISTS BOOKINGS_LOG(
-    booking_id INT,
-    d_id INT,
-    client_id INT,
-    deleted_at DATETIME
-);
-
 CREATE TRIGGER log_deleted_booking
 AFTER DELETE ON BOOKINGS
 FOR EACH ROW
 BEGIN
-    INSERT INTO BOOKINGS_LOG(booking_id,d_id,client_id,deleted_at)
-    VALUES(OLD.booking_id,OLD.d_id,OLD.client_id,NOW());
+    DELETE FROM REVENUE
+    WHERE booking_id = OLD.booking_id;
 END //
-
 
 CREATE TRIGGER add_revenue_entry
 AFTER INSERT ON BOOKINGS

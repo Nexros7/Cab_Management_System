@@ -20,15 +20,20 @@ CREATE TABLE CARS(
     FOREIGN KEY(d_id) REFERENCES DRIVERS(d_id) ON DELETE SET NULL);
 
 
-CREATE TABLE OPERATORS(
+CREATE TABLE OPERATORS (
     op_id INT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     address VARCHAR(60) NOT NULL,
     gender CHAR(1),
-    phone_number VARCHAR(15) UNIQUE,
     date_of_birth DATE,
     date_employed DATE);
+
+CREATE TABLE OPERATOR_PHONES (
+    op_id INT,
+    phone_number VARCHAR(15),
+    PRIMARY KEY (op_id, phone_number),
+    FOREIGN KEY (op_id) REFERENCES OPERATORS(op_id) ON DELETE CASCADE);
 
 
 CREATE TABLE CLIENTS(
@@ -109,12 +114,20 @@ INSERT INTO CARS VALUES
 ('KA01GH3456','Maruti','Suzuki Dzire','2024-01-30','Available',104),
 ('GJ05IJ7890','Tata','Tiago','2024-03-25','In service',105);
 
-INSERT INTO OPERATORS VALUES
-(201,'Amit','Reddy','45 Park Lane, Delhi','M','9726841309','1988-06-15','2016-08-01'),
-(202,'Neha','Shah','22 MG Road, Mumbai','F','9842375618','1991-02-25','2017-09-10'),
-(203,'Rohit','Gupta','34 Ring Road, Jaipur','M','9564209873','1985-11-05','2015-06-22'),
-(204,'Sonal','Mehta','56 Ashok Nagar, Ahmedabad','F','9871356420','1990-08-18','2018-03-15'),
-(205,'Vikas','Malhotra','78 Park Street, Kolkata','M','9698742051','1987-12-30','2014-10-12');
+INSERT INTO OPERATORS VALUES 
+(201,'Amit','Reddy','45 Park Lane, Delhi','M','1988-06-15','2016-08-01'),
+(202,'Neha','Shah','22 MG Road, Mumbai','F','1991-02-25','2017-09-10'),
+(203,'Rohit','Gupta','34 Ring Road, Jaipur','M','1985-11-05','2015-06-22'),
+(204,'Sonal','Mehta','56 Ashok Nagar, Ahmedabad','F','1990-08-18','2018-03-15'),
+(205,'Vikas','Malhotra','78 Park Street, Kolkata','M','1987-12-30','2014-10-12');
+
+INSERT INTO OPERATOR_PHONES VALUES
+(201, '9726841309'),
+(201, '9811111111'),
+(202, '9842375618'),
+(203, '9564209873'),
+(204, '9871356420'),
+(205, '9698742051');
 
 INSERT INTO CLIENTS VALUES
 (301,'Regular','Arjun','Singh','12 MG Road, Mumbai','204897351465','123','12/25','9988776655'),

@@ -8,14 +8,26 @@ BEGIN
     WHERE b.d_id = driverID;
 END //
 
-
-CREATE PROCEDURE GetDriverRevenue(IN driverID INT)
+CREATE PROCEDURE AddDriver(
+    IN d_id INT,
+    IN f_name VARCHAR(30),
+    IN l_name VARCHAR(30),
+    IN addr VARCHAR(60),
+    IN gen CHAR(1),
+    IN phone VARCHAR(15),
+    IN dob DATE,
+    IN doj DATE,
+    IN aadhaar VARCHAR(12)
+)
 BEGIN
-    SELECT d.first_name, d.last_name, SUM(r.revenue) AS total_revenue
-    FROM REVENUE r
-    JOIN DRIVERS d ON d.d_id = r.d_id
-    WHERE r.d_id = driverID
-    GROUP BY r.d_id;
+    INSERT INTO DRIVERS(
+        d_id, first_name, last_name, address, gender, 
+        phone_number, date_of_birth, date_employed, aadhaar_number
+    )
+    VALUES(
+        d_id, f_name, l_name, addr, gen, 
+        phone, dob, doj, aadhaar
+        );
 END //
 
 
@@ -55,6 +67,17 @@ BEGIN
     SELECT registration, car_make, car_model, status
     FROM CARS
     WHERE status = 'Available';
+END //
+
+CREATE FUNCTION GetDriverTotalRevenue(driverID INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+    SELECT SUM(revenue) INTO total
+    FROM REVENUE
+    WHERE d_id = driverID;
+    RETURN IFNULL(total, 0);
 END //
 
 DELIMITER ;
