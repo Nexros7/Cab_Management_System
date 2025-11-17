@@ -4,9 +4,9 @@ import pymysql
 import hashlib
 from datetime import datetime
 
-# ---------------------------
+
 # CONFIG
-# ---------------------------
+
 DB_CONFIG = {
     "host": "localhost",
     "user": "souyash",
@@ -14,19 +14,19 @@ DB_CONFIG = {
     "database": "dbms"
 }
 
-# ---------------------------
+
 # DB HELPERS
-# ---------------------------
+
 def get_conn():
     return pymysql.connect(**DB_CONFIG, cursorclass=pymysql.cursors.DictCursor)
 
-def run_query(query, params=None):
-    conn = get_conn()
+def run_query(query, params=None):    # executes the queries
+    conn = get_conn()                 # opens the connection
     cur = conn.cursor()
     try:
-        cur.execute(query, params or ())
+        cur.execute(query, params or ())   # runs all the queries
         rows = cur.fetchall()
-        return pd.DataFrame(rows)
+        return pd.DataFrame(rows)          # fetches all the records and converts it into dataframe
     finally:
         cur.close()
         conn.close()
@@ -41,7 +41,7 @@ def run_update(query, params=None):
         cur.close()
         conn.close()
 
-def run_proc(proc_name, params=None):
+def run_proc(proc_name, params=None):      # calls stored procedures
     conn = get_conn()
     cur = conn.cursor()
     try:
@@ -135,7 +135,7 @@ ensure_app_users_table()
 # ---------------------------
 if not st.session_state.logged_in:
 
-    st.title("🔐 Login")
+    st.title(" Login")
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -157,7 +157,7 @@ if not st.session_state.logged_in:
 
     # SIGNUP SCREEN
     if st.session_state.show_signup:
-        st.subheader("📝 Sign Up")
+        st.subheader(" Sign Up")
         new_user = st.text_input("New Username", key="su1")
         new_pass = st.text_input("New Password", type="password", key="su2")
         new_role = st.selectbox("Role", ["user", "admin"], key="su3")
@@ -196,6 +196,7 @@ menu_items = [
     "Add Booking",
     "Add Driver",
     "Delete Booking",
+    "Update Booking",
     "Driver Procedures",
     "Run Custom SQL",
 ]
@@ -312,6 +313,73 @@ elif menu == "Delete Booking":
             st.success("Deleted!")
 
 # ---------------------------
+# UPDATE BOOKING
+# ---------------------------
+elif menu == "Update Booking":
+    st.header(" Update Booking Timings")
+
+    try:
+        # Get all bookings
+        bookings_df = run_query("""
+            SELECT booking_id, d_id, client_id, pickup_location, destination,
+                   time_of_booking, time_of_pickup
+            FROM BOOKINGS ORDER BY booking_id DESC
+        """)
+        
+        if bookings_df.empty:
+            st.info("No bookings found.")
+        else:
+            # Display bookings for selection
+            st.subheader("Select Booking to Update")
+            
+            booking_options = {
+                f"Booking \t{row['booking_id']} - {row['pickup_location']} → {row['destination']}": row['booking_id']
+                for _, row in bookings_df.iterrows()
+            }
+            
+            selected_booking = st.selectbox("Choose booking:", list(booking_options.keys()))
+            selected_id = booking_options[selected_booking]
+            
+            # Get current booking details
+            current = bookings_df[bookings_df['booking_id'] == selected_id].iloc[0]
+            
+            st.subheader("Current Timings")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.info(f"**Time of Booking:** {current['time_of_booking']}")
+            with col2:
+                st.info(f"**Time of Pickup:** {current['time_of_pickup']}")
+            
+            # Update form
+            st.subheader("Update Timings")
+            with st.form("update_booking_form"):
+                new_booking_time = st.text_input(
+                    "New Time of Booking", 
+                    value=str(current['time_of_booking'])
+                )
+                new_pickup_time = st.text_input(
+                    "New Time of Pickup", 
+                    value=str(current['time_of_pickup'])
+                )
+                
+                submit = st.form_submit_button("Update Timings")
+            
+            if submit:
+                try:
+                    run_update("""
+                        UPDATE BOOKINGS 
+                        SET time_of_booking = %s, time_of_pickup = %s 
+                        WHERE booking_id = %s
+                    """, (new_booking_time, new_pickup_time, selected_id))
+                    st.success(f"Booking #{selected_id} timings updated successfully!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error updating booking: {e}")
+                    
+    except Exception as e:
+        st.error(e)
+
+# ---------------------------
 # DRIVER PROCEDURES
 # ---------------------------
 elif menu == "Driver Procedures":
@@ -321,10 +389,10 @@ elif menu == "Driver Procedures":
         "GetDriverBookings",
         "GetDriverShift",
         "GetAvailableCars",
-        "GetDriverTotalRevenue (FUNCTION)"
+        "GetDriverTotalRevenue"
     ])
 
-    needs_id = choice in ["GetDriverBookings", "GetDriverShift", "GetDriverTotalRevenue (FUNCTION)"]
+    needs_id = choice in ["GetDriverBookings", "GetDriverShift", "GetDriverTotalRevenue"]
 
     if needs_id:
         did = st.number_input("Driver ID", value=101)
@@ -332,7 +400,7 @@ elif menu == "Driver Procedures":
     if st.button("Run Procedure"):
         try:
             # function call
-            if choice == "GetDriverTotalRevenue (FUNCTION)":
+            if choice == "GetDriverTotalRevenue":
                 df = run_query("SELECT GetDriverTotalRevenue(%s) AS total_revenue;", (did,))
                 st.dataframe(df)
 
@@ -371,13 +439,50 @@ elif menu == "User Management":
 
     st.header(" User Management")
 
-    newU = st.text_input("New Username")
-    newP = st.text_input("Password", type="password")
-    newR = st.selectbox("Role", ["user", "admin"])
-    
-    if st.button("Create"):
+    tab1, tab2, tab3 = st.tabs(["Create User", "View Users", "Delete User"])
+
+    with tab1:
+        st.subheader("Create New User")
+        newU = st.text_input("New Username")
+        newP = st.text_input("Password", type="password")
+        newR = st.selectbox("Role", ["user", "admin"])
+        
+        if st.button("Create"):
+            try:
+                create_app_user(newU, newP, newR)
+                st.success("User created.")
+            except Exception as e:
+                st.error(e)
+
+    with tab2:
+        st.subheader("All Users")
         try:
-            create_app_user(newU, newP, newR)
-            st.success("User created.")
+            users_df = run_query("SELECT user_id, username, role FROM APP_USERS")
+            st.dataframe(users_df, use_container_width=True)
+        except Exception as e:
+            st.error(e)
+
+    with tab3:
+        st.subheader("Revoke User Access")
+        try:
+            users_df = run_query("SELECT user_id, username, role FROM APP_USERS")
+            if not users_df.empty:
+                user_options = {f"{row['username']} ({row['role']})": row['user_id'] 
+                               for _, row in users_df.iterrows()}
+                
+                selected = st.selectbox("Select user to delete:", list(user_options.keys()))
+                selected_id = user_options[selected]
+                
+                st.warning(f"This will permanently delete user: **{selected}**")
+                
+                if st.button("Revoke Access", type="primary"):
+                    try:
+                        run_update("DELETE FROM APP_USERS WHERE user_id=%s", (selected_id,))
+                        st.success(f"User '{selected}' has been deleted.")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(e)
+            else:
+                st.info("No users found.")
         except Exception as e:
             st.error(e)
