@@ -222,13 +222,44 @@ if menu == "Dashboard":
             count = df["c"][0] if not df.empty else 0
             cols[i].metric(tbl, count)
 
+        # JOIN Query - Booking Details with Driver and Client Names
         st.subheader("Recent Bookings")
-        df = run_query("""
-            SELECT booking_id, d_id, client_id, pickup_location, destination,
-                   price, payment_type, time_of_booking
-            FROM BOOKINGS ORDER BY booking_id DESC LIMIT 10
+        join_df = run_query("""
+            SELECT 
+                b.booking_id,
+                CONCAT(d.first_name, ' ', d.last_name) AS driver_name,
+                CONCAT(c.first_name, ' ', c.last_name) AS client_name,
+                b.pickup_location,
+                b.destination,
+                b.price,
+                b.payment_type,
+                b.time_of_booking
+            FROM BOOKINGS b
+            JOIN DRIVERS d ON b.d_id = d.d_id
+            JOIN CLIENTS c ON b.client_id = c.client_id
+            ORDER BY b.booking_id DESC
+            LIMIT 10
         """)
-        st.dataframe(df)
+        st.dataframe(join_df, use_container_width=True)
+
+        # Nested Query - Drivers Who Have Multiple Bookings
+        st.subheader("Active Drivers")
+        nested_df = run_query("""
+            SELECT 
+                d.d_id,
+                CONCAT(d.first_name, ' ', d.last_name) AS driver_name,
+                d.phone_number,
+                d.address
+            FROM DRIVERS d
+            WHERE d.d_id IN (
+                SELECT DISTINCT b.d_id
+                FROM BOOKINGS b
+                WHERE b.d_id IS NOT NULL
+            )
+            ORDER BY d.d_id
+        """)
+        st.dataframe(nested_df, use_container_width=True)
+        
     except Exception as e:
         st.error(e)
 
